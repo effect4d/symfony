@@ -25,34 +25,41 @@ class User implements UserInterface, \Serializable
     /**
      * @ORM\Column(type="string", length=25, unique=true)
      * @Assert\NotBlank()
+     * @Assert\Length(max=25)
      */
     private $username;
 
     /**
      * @ORM\Column(type="string", length=64)
+     * @Assert\NotBlank()
+     * @Assert\Length(max=64)
      */
     private $password;
     
     /**
-     * @Assert\NotBlank()
      * @Assert\Length(max=4096)
      */
     private $plainPassword;
 
     /**
      * @ORM\Column(type="string", length=60, unique=true)
+     * @Assert\NotBlank()
+     * @Assert\Length(max=60)
+     * @Assert\Email()
      */
     private $email;
 
     /**
      * @ORM\Column(name="is_active", type="boolean")
      */
-    private $isActive;
+    private $isActive = false;
     
     /**
      * @ORM\Column(type="string", length=64)
+     * @Assert\NotBlank()
+     * @Assert\Length(max=64)
      */
-    private $role;
+    private $role = 'ROLE_USER';
 
     public function __construct()
     {
@@ -109,13 +116,16 @@ class User implements UserInterface, \Serializable
 
     public function setPlainPassword($password)
     {
-        $this->plainPassword = $password;
+        if ($password) {
+            $this->plainPassword = $password;
+        } else {
+            $this->plainPassword = $this->password;
+        }
     }
 
     public function getRoles()
     {
         return [$this->role];
-        //return array('ROLE_ADMIN');
     }
     
     /**
@@ -128,6 +138,23 @@ class User implements UserInterface, \Serializable
     public function setRoles($role)
     {
         $this->role = $role;
+    }
+    
+    /**
+     * Set roles
+     *
+     * @param string $role
+     *
+     * @return User
+     */
+    public function setBoolRoles($role)
+    {
+        $this->role = $role ? 'ROLE_ADMIN' : 'ROLE_USER';
+    }
+    
+    public function getBoolRoles()
+    {
+        return $this->role == 'ROLE_ADMIN' ? true : false;
     }
 
     /**

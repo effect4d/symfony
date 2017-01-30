@@ -5,8 +5,10 @@ namespace AppBundle\Controller;
 use AppBundle\Form\UserType;
 use AppBundle\Entity\User;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Form\FormError;
 
 class AdminController extends Controller
 {
@@ -15,44 +17,70 @@ class AdminController extends Controller
      */
     public function indexAction(Request $request)
     {        
+        $entityManager = $this->getDoctrine()->getManager();
+        $users = $entityManager->getRepository(User::class)->findAll();
+        
         return $this->render('admin/index.html.twig', [
+            'users' => $users,
         ]);
     }
     
     /**
-     * @Route("/admin/register", name="registration")
+     * @Route("/admin/register", name="create")
      */
-    public function registerAction(Request $request)
+    public function createAction(Request $request)
     {
-        // 1) build the form
         $user = new User();
-        $form = $this->createForm(UserType::class, $user);
-
-        // 2) handle the submit (will only happen on POST)
-        $form->handleRequest($request);
-        $user->setRoles('ROLE_USER');
         
+        $form = $this->createForm(UserType::class, $user, [
+            'type' => 'create',
+        ]);
+        $form->handleRequest($request);
+                
         if ($form->isSubmitted() && $form->isValid()) {
-
-            // 3) Encode the password (you could also do this via Doctrine listener)
-            $password = $this->get('security.password_encoder')
-                ->encodePassword($user, $user->getPlainPassword());
+            $password = $this->get('security.password_encoder')->encodePassword($user, $user->getPassword());
             $user->setPassword($password);
-
-            // 4) save the User!
+            
             $em = $this->getDoctrine()->getManager();
             $em->persist($user);
             $em->flush();
 
-            // ... do any other work - like sending them an email, etc
-            // maybe set a "flash" success message for the user
-
-            return $this->redirectToRoute('login');
+            return $this->redirectToRoute('admin');
         }
 
-        return $this->render(
-            'admin/register.html.twig',
-            array('form' => $form->createView())
-        );
+        return $this->render('admin/user/create.html.twig', [
+            'form' => $form->createView(),
+        ]);
+    }
+    
+    /**
+     * @Route("/admin/user/edit/{id}", requirements={"id": "\d+"}, name="user_edit")
+     * @Method({"GET", "POST"})
+     */
+    public function editAction(User $user, Request $request)
+    {       
+        $entityManager = $this->getDoctrine()->getManager();
+        $form = $this->createForm(UserType::class, $user, [
+            'type' => 'edit',
+        ]);
+        
+        $oldPassword = $user->getPassword();
+        $form->handleRequest($request);
+        
+        if ($form->isSubmitted() && $form->isValid()) {
+            $password = $this->get('security.password_encoder')->encodePassword($user, $user->getPassword());
+            $user->setPassword($password);
+            
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($user);
+            $em->flush();
+        
+            return $this->redirectToRoute('admin');
+        }
+
+        return $this->render('admin/user/edit.html.twig', [
+            'user' => $user,
+            'form' => $form->createView(),
+        ]);
     }
 }
