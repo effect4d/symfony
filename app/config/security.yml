@@ -1,0 +1,53 @@
+# To get started with security, check out the documentation:
+# http://symfony.com/doc/current/security.html
+security:
+    
+    encoders:
+        AppBundle\Entity\User:
+            algorithm: bcrypt
+
+    providers:
+        database_users:
+            entity: { class: AppBundle:User, property: username }
+
+    firewalls:
+
+        main:
+            # this firewall applies to all URLs
+            pattern: ^/
+            
+            http_basic: ~
+
+            # but the firewall does not require login on every page
+            # denying access is done in access_control or in your controllers
+            anonymous: true
+            
+            provider: database_users
+            
+            anonymous: ~
+            form_login:
+                login_path: login
+                check_path: login
+                
+            logout:
+                path: logout
+                target: login
+            
+            # This allows the user to login by submitting a username and password
+            # form_login:
+            #     # The route name that the login form submits to
+            #     check_path: login
+            #     # The name of the route where the login form lives
+            #     # When the user tries to access a protected page, they are redirected here
+            #     login_path: login
+            #     # Secure the login form against CSRF
+            #     # Reference: http://symfony.com/doc/current/cookbook/security/csrf_in_login_form.html
+            #     csrf_token_generator: security.csrf.token_manager
+            # 
+            # logout:
+            #     # The route name the user can go to in order to logout
+            #     path: logout
+            #     # The name of the route to redirect to after logging out
+            #     target: homepage
+    access_control:
+        - { path: '^/admin', roles: ROLE_ADMIN }
