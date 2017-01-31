@@ -4,7 +4,6 @@ parameters:
 #    parameter_name: value
 
 services:
-services:
     app.amqp.email:
         class: AppBundle\Consumer\MailConsumer
         arguments:
