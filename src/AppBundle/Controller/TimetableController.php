@@ -6,6 +6,7 @@ use AppBundle\Form\TimetableType;
 use AppBundle\Form\SubscriptionType;
 use AppBundle\Entity\Timetable;
 use AppBundle\Entity\Subscription;
+use AppBundle\Entity\User;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
@@ -18,7 +19,7 @@ class TimetableController extends Controller
      */
     public function indexAction(Request $request)
     {        
-        $entityManager = $this->getDoctrine()->getRepository('AppBundle:Timetable');        
+        $entityManager = $this->getDoctrine()->getRepository(Timetable::class);        
         $query = $entityManager->createQueryBuilder('timetable')
             ->select('timetable.id, timetable.name, timetable.trainer, timetable.description, subscriptions.id as sid, subscriptions.type')
             ->leftJoin('timetable.subscriptions', 'subscriptions', 'WITH', 'subscriptions.user = :user')
@@ -118,6 +119,58 @@ class TimetableController extends Controller
         return $this->render('timetable/edit.html.twig', [
             'timetable' => $timetable,
             'form' => $form->createView(),
+        ]);
+    }
+        
+    /**
+     * @Route("/admin/timetable/notice/{id}", requirements={"id": "\d+"}, name="timetable_notice")
+     * @Method({"GET", "POST"})
+     */
+    public function noticeAction(Request $request)
+    {
+        $routeParams = $request->get('_route_params'); 
+        $msgEmail = $request->request->get('email');
+        $msgSms = $request->request->get('sms');
+        
+        $entityManager = $this->getDoctrine()->getRepository(User::class);        
+        $query = $entityManager->createQueryBuilder('user')
+            ->select('user.id, user.username, user.email, user.phone, subscriptions.type')
+            ->innerJoin('user.subscriptions', 'subscriptions')
+            ->where('subscriptions.timetable = :timetable')
+            ->setParameter('timetable', $routeParams['id'])
+            ->getQuery();
+        $users = $query->getResult();
+        
+        foreach ($users as $user) {
+            if ($user['type'] == 'EMAIL' && $msgEmail) {
+                $this->get('old_sound_rabbit_mq.email_producer')->publish(json_encode([
+                    'id' => $user['id'],
+                    'text' => $msgEmail,
+                ]));
+            }
+            
+            if ($user['type'] == 'PHONE' && $msgSms) {
+                $this->get('old_sound_rabbit_mq.sms_producer')->publish(json_encode([
+                    'id' => $user['id'],
+                    'text' => $msgSms,
+                ]));
+            }
+        }
+        
+        if ($msgSms) {
+            $this->get('old_sound_rabbit_mq.sms_producer')->publish(json_encode([
+                'id' => $routeParams['id'],
+                'text' => $msgSms,
+            ]));
+        }
+        
+        if ($msgEmail || $msgSms) {
+            return $this->redirectToRoute('timetable');
+        }
+                
+        return $this->render('timetable/notice.html.twig', [
+            'id' => $routeParams['id'],
+            'users' => $users,
         ]);
     }
 }

@@ -4,6 +4,10 @@ parameters:
 #    parameter_name: value
 
 services:
-#    service_name:
-#        class: AppBundle\Directory\ClassName
-#        arguments: ["@another_service_name", "plain_value", "%parameter_name%"]
+services:
+    app.amqp.email:
+        class: AppBundle\Consumer\MailConsumer
+        arguments: ['@doctrine.orm.entity_manager']
+    app.amqp.sms:
+        class: AppBundle\Consumer\SMSConsumer
+        arguments: ['@doctrine.orm.entity_manager']

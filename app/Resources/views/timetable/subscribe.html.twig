@@ -4,13 +4,7 @@
     <div class="row">
         <div class="col-sm-5">
             <div class="well">
-                {{ subscription.timetable.name }}
-            </div>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-sm-5">
-            <div class="well">
+                <legend><i class="fa fa-list-alt" aria-hidden="true"></i> {{ subscription.timetable.name }}</legend>
                 {{ form_start(form) }}
                     {{ form_errors(form) }}
                     {{ form_row(form.type) }}

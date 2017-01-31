@@ -13,7 +13,7 @@
                         <th scope="col">Description</th>
                         <th scope="col" class="text-right">Subscription</th>
                         {% if is_granted('ROLE_ADMIN') %}
-                            <th scope="col" class="text-right">Edit</th>
+                            <th scope="col" class="text-right">Actions</th>
                         {% endif %}
                     </tr>
                 </thead>
@@ -41,6 +41,9 @@
                                 <div class="item-actions">
                                     <a href="{{ path('timetable_edit', { id: timetable.id }) }}" class="btn btn-sm btn-primary">
                                         <i class="fa fa-user" aria-hidden="true"></i> edit
+                                    </a>
+                                    <a href="{{ path('timetable_notice', { id: timetable.id }) }}" class="btn btn-sm btn-primary">
+                                        <i class="fa fa-user" aria-hidden="true"></i> notice
                                     </a>
                                 </div>
                             </td>
