@@ -2,7 +2,6 @@
 
 namespace AppBundle\Form;
 
-use AppBundle\Entity\User;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -18,6 +17,7 @@ class UserType extends AbstractType
     {        
         $builder
             ->add('email', EmailType::class)
+            ->add('phone', TextType::class)
             ->add('username', TextType::class)
             ->add('boolRoles', CheckboxType::class, [
                 'label' => 'Admin',
@@ -41,7 +41,6 @@ class UserType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            //'data_class' => User::class,
             'type' => 'create',
         ]);
     }

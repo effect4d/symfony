@@ -10,6 +10,7 @@
                     <tr>
                         <th scope="col">Username</th>
                         <th scope="col">Email</th>
+                        <th scope="col">Phone</th>
                         <th scope="col">Role</th>
                         <th scope="col">Is Active</th>
                         <th scope="col" class="text-right">Action</th>
@@ -20,6 +21,7 @@
                     <tr>
                         <td>{{ user.username }}</td>
                         <td>{{ user.email }}</td>
+                        <td>{{ user.phone }}</td>
                         <td>{{ user.roles|join(', ') }}</td>
                         <td>
                             {% if user.IsActive %}
@@ -31,7 +33,7 @@
                         <td class="text-right">
                             <div class="item-actions">
                                 <a href="{{ path('user_edit', { id: user.id }) }}" class="btn btn-sm btn-primary">
-                                    <i class="fa fa-edit" aria-hidden="true"></i> edit!
+                                    <i class="fa fa-edit" aria-hidden="true"></i> edit
                                 </a>
                             </div>
                         </td>

@@ -1,0 +1,41 @@
+{% extends 'base.html.twig' %}
+
+{% block body_id 'admin' %}
+
+{% block main %}
+    <div class="row">
+        <div class="col-sm-12">
+            <table class="table table-striped table-middle-aligned">
+                <thead>
+                    <tr>
+                        <th scope="col">Name</th>
+                        <th scope="col">Trainer</th>
+                        <th scope="col">Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for timetable in timetables %}
+                    <tr>
+                        <td>{{ timetable.name }}</td>
+                        <td>{{ timetable.trainer }}</td>
+                        <td>{{ timetable.description }}</td>
+                        <td class="text-right">
+                            <div class="item-actions">
+                                {% if timetable.type %}
+                                    <a href="{{ path('timetable_unsubscribe', { id: timetable.sid }) }}" class="btn btn-sm btn-primary">
+                                        <i class="fa fa-user" aria-hidden="true"></i> unsubscribe [{{ timetable.type }}]
+                                    </a>
+                                {% else %}
+                                    <a href="{{ path('timetable_subscribe', { id: timetable.id }) }}" class="btn btn-sm btn-primary">
+                                        <i class="fa fa-user" aria-hidden="true"></i> subscribe
+                                    </a>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}

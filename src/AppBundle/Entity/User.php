@@ -48,24 +48,36 @@ class User implements UserInterface, \Serializable
      * @Assert\Email()
      */
     private $email;
+    
+    /**
+     * @ORM\Column(type="string", length=20)
+     * @Assert\NotBlank()
+     * @Assert\Length(max=20)
+     */
+    private $phone;
 
     /**
      * @ORM\Column(name="is_active", type="boolean")
      */
-    private $isActive = false;
+    private $isActive;
     
     /**
      * @ORM\Column(type="string", length=64)
      * @Assert\NotBlank()
      * @Assert\Length(max=64)
      */
-    private $role = 'ROLE_USER';
+    private $role;
+    
+    /**
+     * @ORM\OneToMany(targetEntity="Subscription", mappedBy="user")
+     */
+    private $subscriptions;
 
     public function __construct()
     {
         $this->isActive = true;
-        // may not be needed, see section on salt below
-        // $this->salt = md5(uniqid(null, true));
+        $this->role = 'ROLE_USER';
+        $this->subscriptions = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     public function getUsername()
@@ -190,6 +202,30 @@ class User implements UserInterface, \Serializable
     {
         return $this->email;
     }
+    
+    /**
+     * Set phone
+     *
+     * @param string $phone
+     *
+     * @return User
+     */
+    public function setPhone($phone)
+    {
+        $this->phone = $phone;
+
+        return $this;
+    }
+
+    /**
+     * Get phone
+     *
+     * @return string
+     */
+    public function getPhone()
+    {
+        return $this->phone;
+    }
 
     /**
      * Set isActive
@@ -213,6 +249,40 @@ class User implements UserInterface, \Serializable
     public function getIsActive()
     {
         return $this->isActive;
+    }
+    
+    /**
+     * Add subscription
+     *
+     * @param \AppBundle\Entity\Subscription $subscription
+     *
+     * @return User
+     */
+    public function addSubscription(\AppBundle\Entity\Subscription $subscription)
+    {
+        $this->subscriptions[] = $subscription;
+
+        return $this;
+    }
+
+    /**
+     * Remove subscription
+     *
+     * @param \AppBundle\Entity\Subscription $subscription
+     */
+    public function removeSubscription(\AppBundle\Entity\Subscription $subscription)
+    {
+        $this->subscriptions->removeElement($subscription);
+    }
+
+    /**
+     * Get subscriptions
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getSubscriptions()
+    {
+        return $this->subscriptions;
     }
     
     public function eraseCredentials()

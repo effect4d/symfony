@@ -1,0 +1,23 @@
+{% extends 'base.html.twig' %}
+
+{% block main %}
+    <div class="row">
+        <div class="col-sm-5">
+            <div class="well">
+                {{ subscription.timetable.name }}
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-5">
+            <div class="well">
+                {{ form_start(form) }}
+                    {{ form_errors(form) }}
+                    {{ form_row(form.type) }}
+                                        
+                    <button type="submit" class="btn btn-primary">Subscribe</button>
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+{% endblock %}

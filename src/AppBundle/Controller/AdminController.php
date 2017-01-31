@@ -8,7 +8,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Form\FormError;
 
 class AdminController extends Controller
 {
@@ -64,13 +63,9 @@ class AdminController extends Controller
             'type' => 'edit',
         ]);
         
-        $oldPassword = $user->getPassword();
         $form->handleRequest($request);
         
-        if ($form->isSubmitted() && $form->isValid()) {
-            $password = $this->get('security.password_encoder')->encodePassword($user, $user->getPassword());
-            $user->setPassword($password);
-            
+        if ($form->isSubmitted() && $form->isValid()) {            
             $em = $this->getDoctrine()->getManager();
             $em->persist($user);
             $em->flush();

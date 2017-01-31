@@ -11,16 +11,8 @@ security:
             entity: { class: AppBundle:User, property: email }
 
     firewalls:
-
         main:
-            # this firewall applies to all URLs
             pattern: ^/
-            
-            http_basic: ~
-
-            # but the firewall does not require login on every page
-            # denying access is done in access_control or in your controllers
-            anonymous: true
             
             provider: database_users
             
@@ -28,26 +20,13 @@ security:
             form_login:
                 login_path: login
                 check_path: login
+                csrf_token_generator: security.csrf.token_manager
                 
             logout:
                 path: logout
                 target: login
-            
-            # This allows the user to login by submitting a username and password
-            # form_login:
-            #     # The route name that the login form submits to
-            #     check_path: login
-            #     # The name of the route where the login form lives
-            #     # When the user tries to access a protected page, they are redirected here
-            #     login_path: login
-            #     # Secure the login form against CSRF
-            #     # Reference: http://symfony.com/doc/current/cookbook/security/csrf_in_login_form.html
-            #     csrf_token_generator: security.csrf.token_manager
-            # 
-            # logout:
-            #     # The route name the user can go to in order to logout
-            #     path: logout
-            #     # The name of the route to redirect to after logging out
-            #     target: homepage
+        
     access_control:
-        - { path: '^/admin', roles: ROLE_ADMIN }
+        - { path: ^/admin, role: ROLE_ADMIN }
+        - { path: ^/timetable, role: IS_AUTHENTICATED_FULLY }
+        

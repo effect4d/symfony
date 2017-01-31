@@ -45,6 +45,14 @@
                                             <i class="fa fa-home" aria-hidden="true"></i> Homepage
                                         </a>
                                     </li>
+                                    
+                                    {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+                                        <li>
+                                            <a href="{{ path('timetable') }}">
+                                                <i class="fa fa-list-alt" aria-hidden="true"></i> Timetable
+                                            </a>
+                                        </li>
+                                    {% endif %}
 
                                     {% if is_granted('ROLE_ADMIN') %}
                                         <li>
