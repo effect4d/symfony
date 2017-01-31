@@ -153,15 +153,8 @@ class TimetableController extends Controller
                 $this->get('old_sound_rabbit_mq.sms_producer')->publish(json_encode([
                     'id' => $user['id'],
                     'text' => $msgSms,
-                ]));
+                ]), '', [], ['x-delay' => 0]);
             }
-        }
-        
-        if ($msgSms) {
-            $this->get('old_sound_rabbit_mq.sms_producer')->publish(json_encode([
-                'id' => $routeParams['id'],
-                'text' => $msgSms,
-            ]));
         }
         
         if ($msgEmail || $msgSms) {

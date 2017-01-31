@@ -17,6 +17,7 @@ security:
             provider: database_users
             
             anonymous: ~
+            http_basic: ~
             form_login:
                 login_path: login
                 check_path: login

@@ -9,18 +9,35 @@ use PhpAmqpLib\Message\AMQPMessage;
 class MailConsumer implements ConsumerInterface
 {
     private $entityManager;
+    private $mailer;
+    private $logger;
     
-    public function __construct($entityManager)
+    public function __construct($entityManager, $mailer, $logger)
     {
         $this->entityManager = $entityManager;
+        $this->mailer = $mailer;
+        $this->logger = $logger;
     }
     
+    /**
+     * php bin/console rabbitmq:consumer -w email
+     */
     public function execute(AMQPMessage $msg)
     {
-        //php bin/console rabbitmq:consumer -w email
         $data = json_decode($msg->body);
         $user = $this->entityManager->getRepository(User::class)->find($data->id);
         echo $user->getUsername() . ' ' . $data->text . PHP_EOL;
+        
+        $this->logger->info('Sent mail to ' . $user->getUsername() . ' ' . $user->getEmail() . ' text: ' . $data->text);
+        
+        $message = \Swift_Message::newInstance()
+            ->setSubject('Hello Email')
+            ->setFrom('send@example.com')
+            ->setTo($user->getEmail())
+            ->setBody($data->text, 'text/html');
+
+        $this->mailer->send($message);
+    
         return true;
     }
 }

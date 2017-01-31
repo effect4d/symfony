@@ -75,11 +75,11 @@ swiftmailer:
 old_sound_rabbit_mq:
     connections:
         default:
-            host:      %rebbitmq_host%
-            port:      %rebbitmq_port%
-            user:      %rebbitmq_user%
-            password:  %rebbitmq_password%
-            vhost:     %rebbitmq_vhost%
+            host:     localhost
+            port:     5672
+            user:     guest
+            password: guest
+            vhost:    /
     producers:
         email:
             connection: default
@@ -90,7 +90,8 @@ old_sound_rabbit_mq:
             connection: default
             exchange_options:
                 name: 'sms'
-                type: topic
+                type: x-delayed-message
+                arguments: {'x-delayed-type': ['S', 'direct']}
     consumers:
         email:
             connection: default
@@ -104,7 +105,8 @@ old_sound_rabbit_mq:
             connection: default
             exchange_options:
                 name: 'sms'
-                type: topic
+                type: x-delayed-message
+                arguments: {'x-delayed-type': ['S', 'direct']}
             queue_options:
                 name: 'sms'
             callback: app.amqp.sms

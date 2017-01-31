@@ -7,7 +7,13 @@ services:
 services:
     app.amqp.email:
         class: AppBundle\Consumer\MailConsumer
-        arguments: ['@doctrine.orm.entity_manager']
+        arguments:
+            entityManager: "@doctrine.orm.entity_manager"
+            mailer: "@mailer"
+            logger: "@monolog.logger"
     app.amqp.sms:
         class: AppBundle\Consumer\SMSConsumer
-        arguments: ['@doctrine.orm.entity_manager']
+        arguments: 
+            entityManager: "@doctrine.orm.entity_manager"
+            rabbit: "@old_sound_rabbit_mq.sms_producer"
+            logger: "@monolog.logger"
