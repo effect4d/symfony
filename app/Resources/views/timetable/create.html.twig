@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+
+{% block main %}
+    <div class="row">
+        <div class="col-sm-5">
+            <div class="well">
+                {{ form_start(form) }}
+                    {{ form_row(form.name) }}
+                    {{ form_row(form.trainer) }}
+                    {{ form_row(form.description) }}
+                                        
+                    <button type="submit" class="btn btn-primary">Create</button>
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -19,13 +19,13 @@ class AdminController extends Controller
         $entityManager = $this->getDoctrine()->getManager();
         $users = $entityManager->getRepository(User::class)->findAll();
         
-        return $this->render('admin/index.html.twig', [
+        return $this->render('user/index.html.twig', [
             'users' => $users,
         ]);
     }
     
     /**
-     * @Route("/admin/register", name="create")
+     * @Route("/admin/user/create", name="user_create")
      */
     public function createAction(Request $request)
     {
@@ -47,7 +47,7 @@ class AdminController extends Controller
             return $this->redirectToRoute('admin');
         }
 
-        return $this->render('admin/user/create.html.twig', [
+        return $this->render('user/create.html.twig', [
             'form' => $form->createView(),
         ]);
     }
@@ -57,8 +57,7 @@ class AdminController extends Controller
      * @Method({"GET", "POST"})
      */
     public function editAction(User $user, Request $request)
-    {       
-        $entityManager = $this->getDoctrine()->getManager();
+    {
         $form = $this->createForm(UserType::class, $user, [
             'type' => 'edit',
         ]);
@@ -73,7 +72,7 @@ class AdminController extends Controller
             return $this->redirectToRoute('admin');
         }
 
-        return $this->render('admin/user/edit.html.twig', [
+        return $this->render('user/edit.html.twig', [
             'user' => $user,
             'form' => $form->createView(),
         ]);

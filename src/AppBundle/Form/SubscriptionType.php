@@ -5,16 +5,20 @@ namespace AppBundle\Form;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 
-class TimetableType extends AbstractType
+class SubscriptionType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {        
-        $builder
-            ->add('name', TextType::class)
-            ->add('trainer', TextType::class)
-            ->add('description', TextType::class);
+        $builder->add('type', ChoiceType::class, [
+            'choices'  => [
+                'No' => 'NO',
+                'Phone' => 'PHONE',
+                'Email' => 'EMAIL',
+            ],
+            'label' => 'Notice',
+        ]);
             
     }
 

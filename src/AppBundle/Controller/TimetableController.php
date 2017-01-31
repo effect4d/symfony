@@ -3,6 +3,7 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Form\TimetableType;
+use AppBundle\Form\SubscriptionType;
 use AppBundle\Entity\Timetable;
 use AppBundle\Entity\Subscription;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -17,12 +18,12 @@ class TimetableController extends Controller
      */
     public function indexAction(Request $request)
     {        
-        $entityManager = $this->getDoctrine()->getRepository('AppBundle:Timetable');
+        $entityManager = $this->getDoctrine()->getRepository('AppBundle:Timetable');        
         $query = $entityManager->createQueryBuilder('timetable')
             ->select('timetable.id, timetable.name, timetable.trainer, timetable.description, subscriptions.id as sid, subscriptions.type')
-            ->leftJoin("timetable.subscriptions", "subscriptions")
-            ->where('subscriptions.user = :user or subscriptions.user is null')
+            ->leftJoin('timetable.subscriptions', 'subscriptions', 'WITH', 'subscriptions.user = :user')
             ->setParameter('user', $this->getUser()->getId())
+            ->groupBy('timetable.id')
             ->getQuery();
         $timetables = $query->getResult();
         
@@ -39,7 +40,7 @@ class TimetableController extends Controller
     {       
         $subscription = new Subscription();
         $entityManager = $this->getDoctrine()->getManager();
-        $form = $this->createForm(TimetableType::class, $subscription);
+        $form = $this->createForm(SubscriptionType::class, $subscription);
         
         $subscription->setTimetable($timetable);
         $subscription->setUser($this->getUser());
@@ -71,5 +72,52 @@ class TimetableController extends Controller
         $entityManager->flush();
         
         return $this->redirectToRoute('timetable');
+    }
+    
+    /**
+     * @Route("/admin/timetable/create", name="timetable_create")
+     */
+    public function createAction(Request $request)
+    {
+        $timetable = new Timetable();
+        
+        $form = $this->createForm(TimetableType::class, $timetable);
+        $form->handleRequest($request);
+                
+        if ($form->isSubmitted() && $form->isValid()) {            
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->persist($timetable);
+            $entityManager->flush();
+
+            return $this->redirectToRoute('timetable');
+        }
+
+        return $this->render('timetable/create.html.twig', [
+            'form' => $form->createView(),
+        ]);
+    }
+    
+    /**
+     * @Route("/admin/timetable/edit/{id}", requirements={"id": "\d+"}, name="timetable_edit")
+     * @Method({"GET", "POST"})
+     */
+    public function editAction(Timetable $timetable, Request $request)
+    {       
+        $form = $this->createForm(TimetableType::class, $timetable);
+        
+        $form->handleRequest($request);
+        
+        if ($form->isSubmitted() && $form->isValid()) {            
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->persist($timetable);
+            $entityManager->flush();
+        
+            return $this->redirectToRoute('timetable');
+        }
+
+        return $this->render('timetable/edit.html.twig', [
+            'timetable' => $timetable,
+            'form' => $form->createView(),
+        ]);
     }
 }
