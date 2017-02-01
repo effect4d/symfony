@@ -136,7 +136,7 @@ class TimetableController extends Controller
         $query = $entityManager->createQueryBuilder('user')
             ->select('user.id, user.username, user.email, user.phone, subscriptions.type')
             ->innerJoin('user.subscriptions', 'subscriptions')
-            ->where('subscriptions.timetable = :timetable')
+            ->where('subscriptions.timetable = :timetable and user.isActive = 1')
             ->setParameter('timetable', $routeParams['id'])
             ->getQuery();
         $users = $query->getResult();
