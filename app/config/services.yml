@@ -4,6 +4,9 @@ parameters:
 #    parameter_name: value
 
 services:
+    app.send_sms:
+        class: AppBundle\Service\SendSms
+        arguments: [number, text]
     app.amqp.email:
         class: AppBundle\Consumer\MailConsumer
         arguments:
@@ -14,5 +17,6 @@ services:
         class: AppBundle\Consumer\SMSConsumer
         arguments: 
             entityManager: "@doctrine.orm.entity_manager"
-            rabbit: "@old_sound_rabbit_mq.sms_producer"
+            rabbit: "@old_sound_rabbit_mq.smserror_producer"
+            sendSms: "@app.send_sms"
             logger: "@monolog.logger"

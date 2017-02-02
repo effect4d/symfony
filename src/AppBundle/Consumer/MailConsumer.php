@@ -26,7 +26,6 @@ class MailConsumer implements ConsumerInterface
     {
         $data = json_decode($msg->body);
         $user = $this->entityManager->getRepository(User::class)->find($data->id);
-        echo $user->getUsername() . ' ' . $data->text . PHP_EOL;
         
         $this->logger->info('Sent mail to ' . $user->getUsername() . ' ' . $user->getEmail() . ' text: ' . $data->text);
         

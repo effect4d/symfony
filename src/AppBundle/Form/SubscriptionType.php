@@ -13,9 +13,9 @@ class SubscriptionType extends AbstractType
     {        
         $builder->add('type', ChoiceType::class, [
             'choices'  => [
-                'No' => 'NO',
-                'Phone' => 'PHONE',
-                'Email' => 'EMAIL',
+                'Not subscribe' => 'NO',
+                'Email' => $options['email'],
+                'Phone' => $options['phone'],
             ],
             'label' => 'Notice',
         ]);
@@ -23,8 +23,8 @@ class SubscriptionType extends AbstractType
     }
 
     public function configureOptions(OptionsResolver $resolver)
-    {
-        $resolver->setDefaults([
-        ]);
+    {        
+        $resolver->setRequired('email');
+        $resolver->setRequired('phone');
     }
 }

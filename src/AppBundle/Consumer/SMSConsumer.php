@@ -10,12 +10,14 @@ class SMSConsumer implements ConsumerInterface
 {
     private $entityManager;
     private $rabbit;
+    private $sendSms;
     private $logger;
     
-    public function __construct($entityManager, $rabbit, $logger)
+    public function __construct($entityManager, $rabbit, $sendSms, $logger)
     {
         $this->entityManager = $entityManager;
         $this->rabbit = $rabbit;
+        $this->sendSms = $sendSms;
         $this->logger = $logger;
     }
     
@@ -29,20 +31,15 @@ class SMSConsumer implements ConsumerInterface
         
         $this->logger->info('Sent sms to ' . $user->getUsername() . ' ' . $user->getPhone() . ' text: ' . $data->text);
         
-        if (!$this->sendSms($user->getPhone(), $data->text)) {
+        if (!$this->sendSms->send()) {
             $this->logger->info('Resend sms to ' . $user->getUsername() . ' ' . $user->getPhone() . ' in 10 munites');
             
             $this->rabbit->publish(json_encode([
                 'id' => $user->getId(),
                 'text' => $data->text,
-            ]), '', [], ['x-delay' => 3000]);
+            ]), '', [], ['x-delay' => 1000 * 60 * 10]);
         }
         
         return true;
-    }
-    
-    public function sendSms($number, $text)
-    {
-        return (bool)random_int(0, 1);
     }
 }

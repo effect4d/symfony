@@ -7,6 +7,8 @@ imports:
 # http://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
     locale: en
+    email : EMAIL
+    phone: PHONE
 
 framework:
     #esi:             ~
@@ -90,6 +92,11 @@ old_sound_rabbit_mq:
             connection: default
             exchange_options:
                 name: 'sms'
+                type: topic
+        smserror:
+            connection: default
+            exchange_options:
+                name: 'smserror'
                 type: x-delayed-message
                 arguments: {'x-delayed-type': ['S', 'direct']}
     consumers:
@@ -105,8 +112,16 @@ old_sound_rabbit_mq:
             connection: default
             exchange_options:
                 name: 'sms'
+                type: topic
+            queue_options:
+                name: 'sms'
+            callback: app.amqp.sms
+        smserror:
+            connection: default
+            exchange_options:
+                name: 'smserror'
                 type: x-delayed-message
                 arguments: {'x-delayed-type': ['S', 'direct']}
             queue_options:
-                name: 'sms'
+                name: 'smserror'
             callback: app.amqp.sms

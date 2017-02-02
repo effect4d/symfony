@@ -41,7 +41,10 @@ class TimetableController extends Controller
     {       
         $subscription = new Subscription();
         $entityManager = $this->getDoctrine()->getManager();
-        $form = $this->createForm(SubscriptionType::class, $subscription);
+        $form = $this->createForm(SubscriptionType::class, $subscription, [
+            'email' => $this->container->getParameter('email'),
+            'phone' => $this->container->getParameter('phone'),
+        ]);
         
         $subscription->setTimetable($timetable);
         $subscription->setUser($this->getUser());
@@ -127,7 +130,7 @@ class TimetableController extends Controller
      * @Method({"GET", "POST"})
      */
     public function noticeAction(Request $request)
-    {
+    {        
         $routeParams = $request->get('_route_params'); 
         $msgEmail = $request->request->get('email');
         $msgSms = $request->request->get('sms');
@@ -141,23 +144,23 @@ class TimetableController extends Controller
             ->getQuery();
         $users = $query->getResult();
         
-        foreach ($users as $user) {
-            if ($user['type'] == 'EMAIL' && $msgEmail) {
-                $this->get('old_sound_rabbit_mq.email_producer')->publish(json_encode([
-                    'id' => $user['id'],
-                    'text' => $msgEmail,
-                ]));
+        if ($request->isMethod('POST')) {        
+            foreach ($users as $user) {
+                if ($user['type'] == $this->container->getParameter('email') && $msgEmail) {
+                    $this->get('old_sound_rabbit_mq.email_producer')->publish(json_encode([
+                        'id' => $user['id'],
+                        'text' => $msgEmail,
+                    ]));
+                }
+                
+                if ($user['type'] == $this->container->getParameter('phone') && $msgSms) {
+                    $this->get('old_sound_rabbit_mq.sms_producer')->publish(json_encode([
+                        'id' => $user['id'],
+                        'text' => $msgSms,
+                    ]));
+                }
             }
             
-            if ($user['type'] == 'PHONE' && $msgSms) {
-                $this->get('old_sound_rabbit_mq.sms_producer')->publish(json_encode([
-                    'id' => $user['id'],
-                    'text' => $msgSms,
-                ]), '', [], ['x-delay' => 0]);
-            }
-        }
-        
-        if ($msgEmail || $msgSms) {
             return $this->redirectToRoute('timetable');
         }
                 
