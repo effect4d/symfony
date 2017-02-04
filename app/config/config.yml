@@ -87,24 +87,31 @@ old_sound_rabbit_mq:
             connection: default
             exchange_options:
                 name: 'email'
-                type: topic
+                type: direct
+            queue_options:
+                name: 'email'
         sms:
             connection: default
             exchange_options:
                 name: 'sms'
-                type: topic
+                type: direct
+            queue_options:
+                name: 'sms'
         smserror:
             connection: default
             exchange_options:
                 name: 'smserror'
-                type: x-delayed-message
-                arguments: {'x-delayed-type': ['S', 'direct']}
+                type: direct
+            queue_options:
+                name: 'smserror'
+                arguments: 
+                    {'x-message-ttl': ['I', 600000], 'x-dead-letter-exchange': ['S', 'sms']}
     consumers:
         email:
             connection: default
             exchange_options:
                 name: 'email'
-                type: topic
+                type: direct
             queue_options:
                 name: 'email'
             callback: app.amqp.email
@@ -112,16 +119,7 @@ old_sound_rabbit_mq:
             connection: default
             exchange_options:
                 name: 'sms'
-                type: topic
+                type: direct
             queue_options:
                 name: 'sms'
-            callback: app.amqp.sms
-        smserror:
-            connection: default
-            exchange_options:
-                name: 'smserror'
-                type: x-delayed-message
-                arguments: {'x-delayed-type': ['S', 'direct']}
-            queue_options:
-                name: 'smserror'
             callback: app.amqp.sms

@@ -37,7 +37,7 @@ class SMSConsumer implements ConsumerInterface
             $this->rabbit->publish(json_encode([
                 'id' => $user->getId(),
                 'text' => $data->text,
-            ]), '', [], ['x-delay' => 1000 * 60 * 10]);
+            ]));
         }
         
         return true;
