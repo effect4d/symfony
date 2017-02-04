@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace AppBundle\Entity;
 
@@ -7,7 +7,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Table(name="timetable")
- * @ORM\Entity(repositoryClass="AppBundle\Repository\UserRepository")
+ * @ORM\Entity(repositoryClass="AppBundle\Repository\TimetableRepository")
  */
 class Timetable
 {
@@ -31,20 +31,20 @@ class Timetable
      * @Assert\Length(max=255)
      */
     private $trainer;
-    
+
     /**
      * @ORM\Column(type="text")
      * @Assert\NotBlank()
      */
     private $description;
-    
+
     /**
      * @ORM\OneToMany(targetEntity="Subscription", mappedBy="timetable")
      */
     private $subscriptions;
-    
+
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct()
     {
@@ -68,7 +68,7 @@ class Timetable
     {
         $this->name = $name;
     }
-    
+
     public function getDescription()
     {
         return $this->description;
@@ -83,7 +83,7 @@ class Timetable
     }
 
     /**
-     * Set trainer
+     * Set trainer.
      *
      * @param string $trainer
      *
@@ -97,7 +97,7 @@ class Timetable
     }
 
     /**
-     * Get trainer
+     * Get trainer.
      *
      * @return string
      */
@@ -107,7 +107,7 @@ class Timetable
     }
 
     /**
-     * Add subscription
+     * Add subscription.
      *
      * @param \AppBundle\Entity\Subscription $subscription
      *
@@ -121,7 +121,7 @@ class Timetable
     }
 
     /**
-     * Remove subscription
+     * Remove subscription.
      *
      * @param \AppBundle\Entity\Subscription $subscription
      */
@@ -131,7 +131,7 @@ class Timetable
     }
 
     /**
-     * Get subscriptions
+     * Get subscriptions.
      *
      * @return \Doctrine\Common\Collections\Collection
      */

@@ -3,7 +3,6 @@
 namespace AppBundle\Service;
 
 use Httpful\Request;
-use Httpful\Http;
 
 class SendSms
 {

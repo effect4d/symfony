@@ -20,13 +20,7 @@ class TimetableController extends Controller
     public function indexAction(Request $request)
     {        
         $entityManager = $this->getDoctrine()->getRepository(Timetable::class);        
-        $query = $entityManager->createQueryBuilder('timetable')
-            ->select('timetable.id, timetable.name, timetable.trainer, timetable.description, subscriptions.id as sid, subscriptions.type')
-            ->leftJoin('timetable.subscriptions', 'subscriptions', 'WITH', 'subscriptions.user = :user')
-            ->setParameter('user', $this->getUser()->getId())
-            ->groupBy('timetable.id')
-            ->getQuery();
-        $timetables = $query->getResult();
+        $timetables = $entityManager->findMyTimetables($this->getUser()->getId());
         
         return $this->render('timetable/index.html.twig', [
             'timetables' => $timetables,
@@ -136,13 +130,7 @@ class TimetableController extends Controller
         $msgSms = $request->request->get('sms');
         
         $entityManager = $this->getDoctrine()->getRepository(User::class);        
-        $query = $entityManager->createQueryBuilder('user')
-            ->select('user.id, user.username, user.email, user.phone, subscriptions.type')
-            ->innerJoin('user.subscriptions', 'subscriptions')
-            ->where('subscriptions.timetable = :timetable and user.isActive = 1')
-            ->setParameter('timetable', $routeParams['id'])
-            ->getQuery();
-        $users = $query->getResult();
+        $users = $entityManager->findUsersNotice($routeParams['id']);
         
         if ($request->isMethod('POST')) {        
             foreach ($users as $user) {

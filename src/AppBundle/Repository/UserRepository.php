@@ -12,6 +12,7 @@
 namespace AppBundle\Repository;
 
 use Doctrine\ORM\EntityRepository;
+use AppBundle\Entity\User;
 
 /**
  * This custom Doctrine repository is empty because so far we don't need any custom
@@ -25,4 +26,16 @@ use Doctrine\ORM\EntityRepository;
  */
 class UserRepository extends EntityRepository
 {
+    public function findUsersNotice($timetableId)
+    {
+        $entityManager = $this->getEntityManager()->getRepository(User::class);
+        $query = $entityManager->createQueryBuilder('user')
+            ->select('user.id, user.username, user.email, user.phone, subscriptions.type')
+            ->innerJoin('user.subscriptions', 'subscriptions')
+            ->where('subscriptions.timetable = :timetable and user.isActive = 1')
+            ->setParameter('timetable', $timetableId)
+            ->getQuery();
+
+        return $query->getResult();
+    }
 }
