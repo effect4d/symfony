@@ -30,13 +30,10 @@ php bin/console doctrine:migrations:migrate
 phpunit
 ~~~
 
-За рассылку почты и SMS отвечают три воркера, которые можно повесить к примеру на upstart
+За рассылку почты и SMS отвечают два воркера, которые можно повесить к примеру на upstart
 ~~~
 php bin/console rabbitmq:consumer -w email
 ~~~
 ~~~
 php bin/console rabbitmq:consumer -w sms
-~~~
-~~~
-php bin/console rabbitmq:consumer -w smserror
 ~~~
