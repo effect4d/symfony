@@ -31,7 +31,7 @@ class SMSConsumer implements ConsumerInterface
         
         $this->logger->info('Sent sms to ' . $user->getUsername() . ' ' . $user->getPhone() . ' text: ' . $data->text);
         
-        if (!$this->sendSms->send()) {
+        if (!$this->sendSms->send($user->getPhone(), $data->text)) {
             $this->logger->info('Resend sms to ' . $user->getUsername() . ' ' . $user->getPhone() . ' in 10 munites');
             
             $this->rabbit->publish(json_encode([
