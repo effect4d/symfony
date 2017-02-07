@@ -4,7 +4,7 @@ Symfony
 REQUIREMENTS
 ------------
 
-Для работы необходим RabbitMQ + [rabbitmq_delayed_message_exchange](https://www.rabbitmq.com/blog/2015/04/16/scheduling-messages-with-rabbitmq/)
+Для работы необходим RabbitMQ
 
 INSTALLATION
 ------------
